@@ -30,7 +30,7 @@ svg  {
   width: 100%;
   height: auto;
   image-rendering: pixelated;
-  background: var(--c-inverted);
+  background: var(--c-bg);
 }
 
 .app {
@@ -191,14 +191,14 @@ svg  {
   }
 }
 
-.main-menu > li {
+.main-menu > li > * {
   transition: 300ms opacity 100ms;
 }
-.subnav-visible .main-menu > li {
+.subnav-visible .main-menu > li > * {
   opacity: 0;
 }
 .subnav-visible .main-menu > .tools__group,
-.subnav-visible .view-modes > li {
+.subnav-visible .view-modes > li > *{
   opacity: 1;
 }
 
