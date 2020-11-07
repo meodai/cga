@@ -2,14 +2,14 @@
   font-size: 2.22vmin;
 
   --c-white: #fff;
-  --c-black: var(--c-inverted);
+  --c-black: #212121;
 
   --c-bg: var(--c-white);
-  --c-inverted: var(--c-block);
+  --c-inverted: var(--c-black);
 
   @media (prefers-color-scheme: dark) {
-      --c-bg: var(--c-black);
-      --c-inverted: var(--c-white);
+    --c-bg: var(--c-black);
+    --c-inverted: var(--c-white);
   }
 }
 
@@ -49,14 +49,13 @@ svg  {
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
   grid-gap: 0vw;
-  box-shadow: 0 0 4rem rgba(0, 0, 0, .2);
-  @media (prefers-color-scheme: dark) {
-    box-shadow: none;
-  }
+  box-shadow: 0 0 0 4px var(--c-inverted);
+
   transform: translate(-50%, -50%);
   background-color: var(--c-bg);
   background-image: linear-gradient(transparent calc(100% - 1px), rgba(#000, .1)), linear-gradient(to right, transparent calc(100% - 1px), rgba(#000, .1));
   background-size: 12.5% 12.5%;
+
   @media (prefers-color-scheme: dark) {
     background-image: linear-gradient(transparent calc(100% - 1px), rgba(#fff, .05)),
     linear-gradient(to right, transparent calc(100% - 1px), rgba(#fff, .05));
@@ -181,8 +180,8 @@ ul {
   z-index: 2;
   top: 50%;
   left: 50%;
-  transform: translate(calc(-45vmin - calc(90vmin/8)), -50%);
-
+  transform: translate(calc(-45vmin - (90vmin/8)), -50%);
+  box-shadow: 0 0 0 4px var(--c-inverted);
   li {
     position: relative;
     width: calc(90vmin/8);
