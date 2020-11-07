@@ -57,8 +57,8 @@ svg  {
   background-size: 12.5% 12.5%;
 
   @media (prefers-color-scheme: dark) {
-    background-image: linear-gradient(transparent calc(100% - 1px), rgba(#fff, .15)),
-    linear-gradient(to right, transparent calc(100% - 1px), rgba(#fff, .15));
+    background-image: linear-gradient(transparent calc(100% - 1px), rgba(#fff, .5)),
+    linear-gradient(to right, transparent calc(100% - 1px), rgba(#fff, .5));
   }
 }
 
@@ -107,8 +107,10 @@ svg  {
       display: block;
       height: 50%;
       flex: 1 1 50%;
-      transition: 233ms background-color linear, 333ms transform cubic-bezier(.7, .3, 0, 1), 333ms border-radius cubic-bezier(.7, .3, 0, 1);
-      //transform: scale(.8);
+      transition: 233ms background-color linear,
+                  333ms transform cubic-bezier(.7, .3, 0, 1),
+                  333ms border-radius cubic-bezier(.7, .3, 0, 1);
+      transform: scale(1.01);
       will-change: transform, border-radius;
 
       .view--cubes--small & {
@@ -127,7 +129,7 @@ svg  {
 
       .view--circles--small & {
         border-radius: 50%;
-        transform: scale(.5);
+        transform: scale(0.5);
       }
 
       &.top {
