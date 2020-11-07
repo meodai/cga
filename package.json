@@ -5,7 +5,8 @@
   "main": "index.pug",
   "scripts": {
     "start": "parcel index.pug",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "parcel build ./src/*.html --public-url https://www.elastiq.ch",
+    "test": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -22,10 +23,15 @@
   },
   "homepage": "https://github.com/meodai/cga#readme",
   "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.5.0",
     "pug": "^3.0.0",
     "sass": "^1.29.0"
   },
   "dependencies": {
     "chroma-js": "^2.1.0"
+  },
+  "staticFiles": {
+    "staticPath": "public"
   }
 }
