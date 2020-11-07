@@ -5,7 +5,7 @@
   "main": "index.pug",
   "scripts": {
     "start": "parcel index.pug",
-    "build": "parcel build index.pug --public-url https://cgi.elastiq.ch",
+    "build": "parcel build index.pug",
     "test": "npm run build"
   },
   "repository": {
