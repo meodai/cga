@@ -1,0 +1,37 @@
+doctype html
+
+html
+  head
+    meta(charset='UTF-8')
+    title Color Palette Generation Assistant
+    link(rel='stylesheet', media='all',  href='main.scss')
+
+  body
+    .cubes
+      img(alt='palette export').save.js-save
+      each val in (new Array(8*8).fill('').map((d,i) => i))
+        .cube(data-i=val)
+          .cube__inner
+            i.left
+            i.top
+            i.bottom
+            i.right
+          input(type='color').js-color.color-input
+
+    .tools
+      ul
+        //li: button.button--draw.js-draw ✏ random
+        li: button.button--edit.js-edit: i.icon ✏️
+        li: button.button--erase.js-erase: i.icon 🗑️
+        li
+          i.icon 🎨
+          select.js-mix-mode
+            each mode in ['lab', 'hsl', 'hsv', 'hsi', 'lch', 'rgb', 'lrgb']
+              option(value=mode)=mode
+        li: button.button--cubes.js-view-mode(data-mode='cubes'): i.icon ◆
+        li: button.button--cubes-small.js-view-mode(data-mode='cubes--small'): i.icon ◆
+        li: button.button--circles.js-view-mode(data-mode='circles'): i.icon ●
+        li: button.button--circles-small.js-view-mode(data-mode='circles--small'): i.icon ●
+        li: button.js-view-mode(data-mode='pixels'): i.icon ■
+    
+    script(src='main.js')

@@ -1,0 +1,241 @@
+:root {
+  font-size: 2.22vmin;
+}
+
+body {
+  background: #fff;
+  line-height: 1;
+}
+
+.save {
+  width: calc(90vmin/8);
+  height: calc(90vmin/8);
+  image-rendering: pixelated;
+  background: #212121;
+
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  right: 0;
+}
+
+.cubes {
+  //background: #212121;
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  display: grid;
+  height: 90vmin;
+  width: 90vmin;
+  margin: 0 auto;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  grid-gap: 0vw;
+  box-shadow: 0 0 4rem rgba(0, 0, 0, .2);
+  //box-shadow: 0 0 0 1px rgba(#fff,.15);
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  background-image: linear-gradient(transparent calc(100% - 1px), rgba(#000, .1)), linear-gradient(to right, transparent calc(100% - 1px), rgba(#000, .1));
+  background-size: 12.5% 12.5%;
+}
+
+.cube {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  //box-shadow: inset 0 0 0 2px #fff;
+  background-color: var(--bg);
+
+  &::after {
+    pointer-events: none;
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 101%;
+    width: 101%;
+    transform: translate(-50%, -50%) scale(1);
+    background-color: var(--bg);
+    transition: 200ms transform;
+  }
+
+  .view--pixels & {
+    background-color: transparent;
+
+    &::after {
+      transform: translate(-50%, -50%) scale(.5);
+    }
+  }
+
+  &__inner {
+    z-index: 2;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+
+    height: 15.90990257669732vmin; // Math.sqrt(Math.pow(11.25, 2) + Math.pow(11.25, 2)) * 2
+    width: 15.90990257669732vmin;
+    flex-wrap: wrap;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    pointer-events: none;
+
+    i {
+      display: block;
+      height: 50%;
+      flex: 1 1 50%;
+      transition: 233ms background-color linear, 333ms transform cubic-bezier(.7, .3, 0, 1), 333ms border-radius cubic-bezier(.7, .3, 0, 1);
+      //transform: scale(.8);
+      will-change: transform, border-radius;
+
+      .view--cubes--small & {
+        transform: scale(.5);
+      }
+
+      .view--pixels & {
+        transform: scale(.71) rotate(45deg);
+      }
+
+      .view--circles & {
+        border-radius: 50%;
+        transform: scale(1.4);
+        mix-blend-mode: overlay; //multiply
+      }
+
+      .view--circles--small & {
+        border-radius: 50%;
+        transform: scale(.5);
+      }
+
+      &.top {
+        background: var(--mix-top);
+      }
+
+      &.right {
+        background: var(--mix-right);
+      }
+
+      &.bottom {
+        background: var(--mix-bottom);
+      }
+
+      &.left {
+        background: var(--mix-left);
+      }
+    }
+  }
+}
+
+.color-input {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  appearance: none;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+
+  .mode--edit .filled & {
+    display: block;
+  }
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tools {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-45vmin - calc(90vmin/8)), -50%);
+
+  li {
+    position: relative;
+    width: calc(90vmin/8);
+    height: calc(90vmin/8);
+    background: #212121;
+  }
+}
+
+button,
+select {
+  position: absolute;
+  display: block;
+  appearance: none;
+  border: none;
+  background: #212121;
+  color: #fff;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 200ms;
+  outline: none;
+}
+
+select {
+  opacity: 0;
+  padding: 1rem;
+}
+
+.icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-style: normal;
+  font-size: 2rem;
+  pointer-events: none;
+}
+
+.button--cubes .icon,
+.button--circles .icon {
+  font-size: 4rem;
+}
+
+.mode--edit .button--edit,
+.mode--erase .button--erase,
+.view--cubes .button--cubes,
+.view--cubes--small .button--cubes-small,
+.view--circles .button--circles,
+.view--circles--small .button--circles-small,
+.view--pixels [data-mode="pixels"] {
+  transform: translate(-.4rem, -.4rem);
+  box-shadow: 1px 1px 0 #fff,
+    2px 2px 0 #fff,
+    3px 3px 0 #fff,
+    4px 4px 0 #fff,
+    5px 5px 0 #fff,
+    6px 6px 0 #fff,
+    7px 7px 0 #fff,
+    8px 8px 0 #fff,
+    9px 9px 0 #fff;
+}
+
+@media (orientation:portrait) {
+  .cubes {
+    top: 5vw;
+    transform: translate(-50%, 0);
+  }
+
+  .tools {
+    width: 90vmin;
+    top: 95vmin;
+    transform: translate(-50%, 0);
+  }
+
+  .tools ul {
+    display: flex;
+  }
+}

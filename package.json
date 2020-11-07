@@ -1,0 +1,31 @@
+{
+  "name": "cga",
+  "version": "0.1.0",
+  "description": "Color Palette Generation Assistant",
+  "main": "index.pug",
+  "scripts": {
+    "start": "parcel index.pug",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meodai/cga.git"
+  },
+  "keywords": [
+    "color",
+    "tool"
+  ],
+  "author": "meodai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meodai/cga/issues"
+  },
+  "homepage": "https://github.com/meodai/cga#readme",
+  "devDependencies": {
+    "pug": "^3.0.0",
+    "sass": "^1.29.0"
+  },
+  "dependencies": {
+    "chroma-js": "^2.1.0"
+  }
+}
