@@ -47,12 +47,14 @@ document.querySelector('.js-mix-mode').addEventListener('change', (e) => {
   })
 })
 
+const $modesTrigger = document.querySelector('.js-view-modes--trigger');
+
 document.addEventListener('click', (e) => {
   const $target = e.target;
   if ($target.matches('.js-view-mode')) {
     const mode = $target.getAttribute('data-mode');
     if( $doc.classList.contains('view--' + mode) ) {
-      document.querySelector('.js-view-modes--trigger').toggleAttribute('aria-expanded');
+      $modesTrigger.toggleAttribute('aria-expanded');
     }
     const classNames = [];
     Array.from(document.querySelectorAll('.js-view-mode')).forEach($e => {
@@ -66,6 +68,12 @@ document.addEventListener('click', (e) => {
     $target.toggleAttribute('aria-expanded');
   } else if ($target.matches('.js-outlined')) {
     $doc.classList.toggle('outlined');
+  }
+
+  if ( $modesTrigger.hasAttribute('aria-expanded') ) {
+      $doc.classList.add('subnav-visible');
+  } else {
+      $doc.classList.remove('subnav-visible');
   }
 }, true);
 

@@ -191,6 +191,16 @@ svg  {
   }
 }
 
+.main-menu > li {
+  transition: 300ms opacity 100ms;
+}
+.subnav-visible .main-menu > li {
+  opacity: 0;
+}
+.subnav-visible .main-menu > .tools__group,
+.subnav-visible .view-modes > li {
+  opacity: 1;
+}
 
 .tools {
   z-index: 2;
@@ -206,6 +216,7 @@ svg  {
     display: flex;
     flex-direction: column;
     height: 100%;
+
   }
   li {
     display: block;
@@ -231,6 +242,7 @@ svg  {
     transition: 300ms opacity;
   }
 }
+
 
 .icon--comp {
   position: relative;
@@ -282,8 +294,6 @@ select {
   transition: transform 200ms;
   outline: none;
 }
-
-
 
 select {
   opacity: 0;
