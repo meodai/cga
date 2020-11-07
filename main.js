@@ -1,5 +1,6 @@
 import chroma from 'chroma-js';
 
+const $favicon = document.querySelector('[rel="icon"]');
 let cubes = Array.from(document.querySelectorAll('.cube'));
 let $doc = document.querySelector('body');
 let gridSize = 8;
@@ -98,6 +99,7 @@ const coords = cubes.map(($cube, i) => {
 
 function updatePNG () {
   $saveBtn.src = $canvas.toDataURL();
+  $favicon.href = $canvas.toDataURL();
 }
 
 let timer;
