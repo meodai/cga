@@ -24,7 +24,7 @@ function setMode (mode) {
   currentMode = mode;
   $doc.classList.remove('mode--erase', 'mode--draw', 'mode--edit');
   $doc.classList.add('mode--' + mode);
-} 
+}
 
 document.querySelector('.js-erase').addEventListener('click', () => {
   setMode('erase');
@@ -50,14 +50,22 @@ document.querySelector('.js-mix-mode').addEventListener('change', (e) => {
 document.addEventListener('click', (e) => {
   const $target = e.target;
   if ($target.matches('.js-view-mode')) {
+    const mode = $target.getAttribute('data-mode');
+    if( $doc.classList.contains('view--' + mode) ) {
+      document.querySelector('.js-view-modes--trigger').toggleAttribute('aria-expanded');
+    }
     const classNames = [];
     Array.from(document.querySelectorAll('.js-view-mode')).forEach($e => {
       classNames.push('view--' + $e.getAttribute('data-mode'));
     });
     classNames.forEach((cls) => {
-      $doc.classList.remove(cls);  
+      $doc.classList.remove(cls);
     });
-    $doc.classList.add( 'view--' + $target.getAttribute('data-mode') )
+    $doc.classList.add( 'view--' + mode )
+  } else if ($target.matches('.js-view-modes--trigger')) {
+    $target.toggleAttribute('aria-expanded');
+  } else if ($target.matches('.js-outlined')) {
+    $doc.classList.toggle('outlined');
   }
 }, true);
 
@@ -90,20 +98,20 @@ function filledNbr (i, $el, eraseMode) {
   clearTimeout(timer);
   timer = setTimeout(updatePNG, 500);
   if (!$el.matches('.cube')) return;
-  
+
   let color = currentColor;
   let colors = {};
-  
+
   if (eraseMode) {
     color = null;
     $el.classList.remove('filled')
   } else {
     $el.classList.add('filled')
   }
-  
+
   $el.style.setProperty('--bg', color || 'transparent');
   coords[i].color = color;
-  
+
   if (i > 0) { // left
     if ( coords[i-1].color ) {
       if (color) {
@@ -118,7 +126,7 @@ function filledNbr (i, $el, eraseMode) {
       }
     }
   }
-  
+
   if (i < coords.length - 2 && ((i+1)%gridSize)) { //right
     if ( coords[i+1].color ) {
       if(color) {
@@ -133,7 +141,7 @@ function filledNbr (i, $el, eraseMode) {
       }
     }
   }
-  
+
   if (Math.floor(i/gridSize)) { //top
     if ( coords[i-gridSize].color ) {
       if(color) {
@@ -148,7 +156,7 @@ function filledNbr (i, $el, eraseMode) {
       }
     }
   }
-  
+
   if (i + 1 < coords.length - gridSize) { //bottom
     if ( coords[i+gridSize].color ) {
       if(color) {
@@ -163,24 +171,24 @@ function filledNbr (i, $el, eraseMode) {
       }
     }
   }
-  
+
   coords.forEach(el => {
-    if(el.color != color) return; 
-    
+    if(el.color != color) return;
+
     let paintMethod = 'clearRect';
-    
+
     if (el.color) {
       ctx.fillStyle = el.color;
       paintMethod = 'fillRect';
     }
-    
+
     ctx[paintMethod](el.x/gridSize * pixelSize * gridSize * 2, el.y/gridSize * pixelSize * gridSize * 2, pixelSize, pixelSize);
-    
+
     Object.keys(colors).forEach(key => {
       if ( key === 'top') {
         ctx.fillStyle = colors[key];
         ctx[paintMethod](el.x/gridSize * pixelSize * gridSize * 2, el.y/gridSize * pixelSize * gridSize * 2 - pixelSize, pixelSize, pixelSize);
-    
+
       } else if ( key === 'bottom') {
         ctx.fillStyle = colors[key];
         ctx[paintMethod](el.x/gridSize * pixelSize * gridSize * 2, el.y/gridSize * pixelSize * gridSize * 2 + pixelSize, pixelSize, pixelSize);
@@ -190,7 +198,7 @@ function filledNbr (i, $el, eraseMode) {
       } else {
         ctx.fillStyle = colors[key];
         ctx[paintMethod](el.x/gridSize * pixelSize * gridSize * 2 + pixelSize, el.y/gridSize * pixelSize * gridSize * 2, pixelSize, pixelSize);
-        
+
       }
     })
   })

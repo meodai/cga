@@ -26,32 +26,32 @@ svg  {
 }
 
 .save {
-  width: calc(90vmin/8);
-  height: calc(90vmin/8);
+  display: block;
+  width: 100%;
+  height: auto;
   image-rendering: pixelated;
   background: var(--c-inverted);
+}
 
-  position: absolute;
-  z-index: 10;
-  top: 0;
-  right: 0;
+.app {
+  position: relative;
+  width: 90vmin;
+  margin: 10vmin auto;
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .cubes {
   //background: var(--c-inverted);
-  position: absolute;
-  top: 50vh;
-  left: 50vw;
+
+  height: 80vmin;
+  width: 80vmin;
   display: grid;
-  height: 90vmin;
-  width: 90vmin;
-  margin: 0 auto;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
   grid-gap: 0vw;
   box-shadow: 0 0 0 4px var(--c-inverted);
 
-  transform: translate(-50%, -50%);
   background-color: var(--c-bg);
   background-image: linear-gradient(transparent calc(100% - 1px), rgba(#000, .1)), linear-gradient(to right, transparent calc(100% - 1px), rgba(#000, .1));
   background-size: 12.5% 12.5%;
@@ -62,11 +62,18 @@ svg  {
   }
 }
 
+
+.outlined .cube::after {
+  box-shadow: inset 0 0 0 2px var(--c-bg);
+}
+.outlined .cube i {
+  box-shadow: inset 0 0 0 4px var(--c-bg);
+}
+
 .cube {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  //box-shadow: inset 0 0 0 2px var(--c-bg);
   background-color: var(--bg);
 
   &::after {
@@ -80,6 +87,7 @@ svg  {
     transform: translate(-50%, -50%) scale(1);
     background-color: var(--bg);
     transition: 200ms transform;
+
   }
 
   .view--pixels & {
@@ -90,6 +98,13 @@ svg  {
     }
   }
 
+  .view--itten & {
+    &::after {
+      z-index: 3;
+      transform: translate(-50%, -50%) scale(.75);
+    }
+  }
+
   &__inner {
     z-index: 2;
     position: absolute;
@@ -97,8 +112,8 @@ svg  {
     left: 50%;
     display: flex;
 
-    height: 15.90990257669732vmin; // Math.sqrt(Math.pow(11.25, 2) + Math.pow(11.25, 2)) * 2
-    width: 15.90990257669732vmin;
+    height: 14.142135623730951vmin; // (80vw / 8) = 10 => Math.sqrt(Math.pow(10, 2) + Math.pow(10, 2))
+    width: 14.142135623730951vmin;
     flex-wrap: wrap;
     transform: translate(-50%, -50%) rotate(-45deg);
     pointer-events: none;
@@ -111,7 +126,9 @@ svg  {
                   333ms transform cubic-bezier(.7, .3, 0, 1),
                   333ms border-radius cubic-bezier(.7, .3, 0, 1);
       transform: scale(1.01);
-      will-change: transform, border-radius;
+
+      //will-change: transform, border-radius;
+
 
       .view--cubes--small & {
         transform: scale(.5);
@@ -131,6 +148,8 @@ svg  {
         border-radius: 50%;
         transform: scale(0.5);
       }
+
+
 
       &.top {
         background: var(--mix-top);
@@ -172,25 +191,78 @@ svg  {
   }
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
 
 .tools {
-  position: absolute;
   z-index: 2;
-  top: 50%;
-  left: 50%;
-  transform: translate(calc(-45vmin - (90vmin/8)), -50%);
   box-shadow: 0 0 0 4px var(--c-inverted);
+  width: calc(80vmin/8);
+  height: 80vmin;
+  background: var(--c-bg);
+
+  menu {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
   li {
+    display: block;
+    margin: 0;
+    padding: 0;
     position: relative;
-    width: calc(90vmin/8);
-    height: calc(90vmin/8);
+    flex: 0 0 12.5%;
     background: var(--c-inverted);
   }
+}
+
+.tools__group {
+  position: relative;
+
+  .view-modes {
+    pointer-events: none;
+    opacity: 0;
+    position: absolute;
+    height: 80vmin;
+    width: 100%;
+    top: -400%;
+    z-index: 4;
+  }
+}
+
+.icon--comp {
+  position: relative;
+}
+.button--views .icon--comp i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 2.5rem;
+  width: auto;
+  height: auto;
+  text-shadow: 3px 3px 0 var(--c-inverted);
+  font-style: normal;
+  line-height: 1;
+
+  &:nth-child(1) {
+    transform: translate(-50%, -70%);
+    z-index: 2;
+  }
+
+  &:nth-child(2) {
+    z-index:1;
+    transform: translate(-90%, -30%);
+  }
+
+  &:nth-child(3) {
+    transform: translate(-10%, -40%);
+  }
+}
+
+.button--views[aria-expanded] +.view-modes {
+  opacity: 1;
+  pointer-events: all;
 }
 
 button,
@@ -239,7 +311,9 @@ select {
 .view--cubes--small .button--cubes-small,
 .view--circles .button--circles,
 .view--circles--small .button--circles-small,
-.view--pixels [data-mode="pixels"] {
+.view--itten .button--itten,
+.view--pixels [data-mode="pixels"],
+.outlined .button--outlined {
   transform: translate(-.4rem, -.4rem);
   box-shadow: 1px 1px 0 var(--c-bg),
     2px 2px 0 var(--c-bg),
@@ -252,19 +326,52 @@ select {
     9px 9px 0 var(--c-bg);
 }
 
+.view--cubes .button--cubes,
+.view--cubes--small .button--cubes-small,
+.view--circles .button--circles,
+.view--circles--small .button--circles-small,
+.view--itten .button--itten,
+.view--pixels [data-mode="pixels"] {
+  .icon {
+    opacity: 0;
+  }
+  &::after {
+    font-size: 3.5rem;
+    content: '×';
+    color: var(--c-bg);
+  }
+}
+
+
 @media (orientation:portrait) {
-  .cubes {
-    top: 5vw;
-    transform: translate(-50%, 0);
+  .app {
+    flex-direction: column;
   }
-
+  .tools__group .view-modes {
+    height: 100%;
+    top: 0;
+    left: -400%;
+  }
   .tools {
-    width: 90vmin;
-    top: 95vmin;
-    transform: translate(-50%, 0);
-  }
-
-  .tools ul {
+    height: calc(80vmin/8);
+    width: 80vmin;
     display: flex;
+    li {
+      flex: 0 0 calc(80vmin/7);
+    }
+    menu {
+      flex-direction: row;
+      width: calc(80vmin/8 * 7);
+    }
   }
+  .save {
+    width: calc(80vmin/8);
+    height: auto;
+    flex: 0 0 calc(80vmin/8);
+  }
+}
+
+.button--outlined .icon {
+  font-size: 4em;
+  margin-top: -.1em;
 }
