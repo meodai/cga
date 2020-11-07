@@ -1,3 +1,5 @@
+@import url('https://rsms.me/inter/inter.css');
+
 :root {
   font-size: 2.22vmin;
 
@@ -11,6 +13,8 @@
     --c-bg: var(--c-black);
     --c-inverted: var(--c-white);
   }
+
+  font-family: 'Inter', sans-serif;
 }
 
 body {
@@ -87,7 +91,6 @@ svg  {
     transform: translate(-50%, -50%) scale(1);
     background-color: var(--bg);
     transition: 200ms transform;
-
   }
 
   .view--pixels & {
@@ -203,11 +206,28 @@ svg  {
 }
 
 .tools {
+  position: relative;
   z-index: 2;
   box-shadow: 0 0 0 4px var(--c-inverted);
   width: calc(80vmin/8);
   height: 80vmin;
   background: var(--c-bg);
+
+  &::after {
+    display: none;
+    content: 'CGA';
+    font-size: 1.8vmax;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    font-weight: 600;
+    text-align: center;
+    height: calc(80vmin/8);
+    line-height: calc(80vmin/8 * 1.05);
+    background: var(--c-inverted);
+    color: var(--c-bg);
+  }
 
   menu {
     padding: 0;
@@ -216,7 +236,6 @@ svg  {
     display: flex;
     flex-direction: column;
     height: 100%;
-
   }
   li {
     display: block;
@@ -325,7 +344,7 @@ select {
 .view--itten .button--itten,
 .view--pixels [data-mode="pixels"],
 .outlined .button--outlined {
-  transform: translate(-.4rem, -.4rem);
+  transform: translate(-10px, -10px);
   box-shadow: 1px 1px 0 var(--c-bg),
     2px 2px 0 var(--c-bg),
     3px 3px 0 var(--c-bg),
@@ -371,6 +390,11 @@ select {
     menu {
       flex-direction: row;
       width: calc(80vmin/8 * 7);
+    }
+    &::after {
+      left: auto;
+      top: 0;
+      width: calc(80vmin/8);
     }
   }
   .save {
