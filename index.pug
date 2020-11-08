@@ -69,14 +69,14 @@ html
             button#viewToggler(aria-haspopup='listbox', aria-label='view modes').button--views.js-view-modes--trigger
               i.icon.icon--comp: <i>◆</i><i>●</i><i>■</i>
             menu(tabindex='-1', role='listbox', aria-labelledby='viewToggler').js-view-modes.view-modes
-              li(role='option'): button.button--cubes.js-view-mode(data-mode='cubes'): i.icon ◆
-              li(role='option'): button.button--cubes-small.js-view-mode(data-mode='cubes--small'): i.icon ◆
-              li(role='option'): button.button--circles.js-view-mode(data-mode='circles'): i.icon ●
-              li(role='option'): button.button--circles-small.js-view-mode(data-mode='circles--small'): i.icon ●
-              li(role='option'): button.button--itten.js-view-mode(data-mode='itten'): i.icon ▣
-              li(role='option'): button.js-view-mode(data-mode='pixels'): i.icon ■
+              li(role='option'): button.button--cubes.js-view-mode(data-mode='cubes'): i.icon.icon--unicode ◆
+              li(role='option'): button.button--cubes-small.js-view-mode(data-mode='cubes--small'): i.icon.icon--unicode ◆
+              li(role='option'): button.button--circles.js-view-mode(data-mode='circles'): i.icon.icon--unicode ●
+              li(role='option'): button.button--circles-small.js-view-mode(data-mode='circles--small'): i.icon.icon--unicode ●
+              li(role='option'): button.button--itten.js-view-mode(data-mode='itten'): i.icon.icon--unicode ▣
+              li(role='option'): button.js-view-mode(data-mode='pixels'): i.icon.icon--unicode ■
 
-          li: button.button--outlined.js-outlined: i.icon □
+          li: button.button--outlined.js-outlined: i.icon.icon--unicode □
 
       a(href="https://www.elastiq.ch/" hreflang="en").ellogo.
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 185">

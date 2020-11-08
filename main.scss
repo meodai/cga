@@ -194,15 +194,22 @@ svg  {
   }
 }
 
-.main-menu > li > * {
-  transition: 300ms opacity 100ms;
+.main-menu > .tools__group {
+  transform: translate(0, 0);
+  transition: 300ms opacity,
+  200ms transform cubic-bezier(.7, .3, 0, 1) 100ms;
 }
-.subnav-visible .main-menu > li > * {
-  opacity: 0;
-}
-.subnav-visible .main-menu > .tools__group,
-.subnav-visible .view-modes > li > *{
+.subnav-visible .main-menu > .tools__group {
   opacity: 1;
+  transform: translate(calc(100% + 4px), 0);
+  transition: 300ms opacity 100ms,
+  200ms transform cubic-bezier(.7, .3, 0, 1);
+}
+
+@media (orientation:portrait) {
+  .subnav-visible .main-menu>.tools__group {
+    transform: translate(0, calc(-100% - 4px));
+  }
 }
 
 .ellogo {
@@ -365,6 +372,10 @@ select {
   font-style: normal;
   font-size: 2rem;
   pointer-events: none;
+
+  &--unicode {
+    margin-top: -0.1em;
+  }
 }
 
 .button--cubes .icon,
