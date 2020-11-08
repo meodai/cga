@@ -54,9 +54,6 @@ document.addEventListener('click', (e) => {
   const $target = e.target;
   if ($target.matches('.js-view-mode')) {
     const mode = $target.getAttribute('data-mode');
-    if( $doc.classList.contains('view--' + mode) ) {
-      $modesTrigger.toggleAttribute('aria-expanded');
-    }
     const classNames = [];
     Array.from(document.querySelectorAll('.js-view-mode')).forEach($e => {
       classNames.push('view--' + $e.getAttribute('data-mode'));

@@ -194,23 +194,6 @@ svg  {
   }
 }
 
-.main-menu > .tools__group {
-  transform: translate(0, 0);
-  transition: 300ms opacity,
-  200ms transform cubic-bezier(.7, .3, 0, 1) 100ms;
-}
-.subnav-visible .main-menu > .tools__group {
-  opacity: 1;
-  transform: translate(calc(100% + 4px), 0);
-  transition: 300ms opacity 100ms,
-  200ms transform cubic-bezier(.7, .3, 0, 1);
-}
-
-@media (orientation:portrait) {
-  .subnav-visible .main-menu>.tools__group {
-    transform: translate(0, calc(-100% - 4px));
-  }
-}
 
 .ellogo {
   z-index: 4;
@@ -336,9 +319,39 @@ svg  {
   }
 }
 
-.button--views[aria-expanded] +.view-modes {
+.button--views[aria-expanded] + .view-modes {
   opacity: 1;
   pointer-events: all;
+}
+
+.button--views[aria-expanded] {
+  .icon--comp {
+    opacity: 0;
+  }
+  &::after {
+    font-size: 3.5rem;
+    content: '×';
+    color: var(--c-bg);
+  }
+}
+
+.main-menu .view-modes {
+  transform: translate(0, 0);
+  transition: 300ms opacity,
+    200ms transform cubic-bezier(.7, .3, 0, 1) 100ms;
+}
+
+.subnav-visible .main-menu .view-modes {
+  opacity: 1;
+  transform: translate(calc(100% + 4px), 0);
+  transition: 300ms opacity 100ms,
+    200ms transform cubic-bezier(.7, .3, 0, 1);
+}
+
+@media (orientation:portrait) {
+  .subnav-visible .main-menu .view-modes {
+    transform: translate(0, calc(-100% - 4px));
+  }
 }
 
 button,
@@ -400,22 +413,6 @@ select {
     5px 5px 0 var(--c-bg),
     6px 6px 0 var(--c-bg),
     7px 7px 0 var(--c-bg);
-}
-
-.view--cubes .button--cubes,
-.view--cubes--small .button--cubes-small,
-.view--circles .button--circles,
-.view--circles--small .button--circles-small,
-.view--itten .button--itten,
-.view--pixels [data-mode="pixels"] {
-  .icon {
-    opacity: 0;
-  }
-  &::after {
-    font-size: 3.5rem;
-    content: '×';
-    color: var(--c-bg);
-  }
 }
 
 
