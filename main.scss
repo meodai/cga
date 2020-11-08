@@ -411,10 +411,11 @@ select {
 @media (orientation:portrait) {
   .ellogo {
     left: auto;
-
-    transform: translateX(-50%);
+    transform: none;
   }
   .app {
+    width: 80vmin;
+    margin: 10vmin auto;
     flex-direction: column;
   }
   .tools__group .view-modes {
