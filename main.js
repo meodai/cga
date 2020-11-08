@@ -84,6 +84,22 @@ document.addEventListener('input', (e) => {
   }
 });
 
+/*
+document.addEventListener('change', (e) => {
+  const $target = e.target;
+  if ($target.matches('.js-color')) {
+    console.log('change')
+  }
+})
+
+document.addEventListener('focus', (e) => {
+  const $target = e.target;
+  if ($target.matches('.js-color')) {
+    console.log('focus')
+  }
+}, true)
+*/
+
 const coords = cubes.map(($cube, i) => {
   return {
     $el: $cube,
@@ -119,7 +135,9 @@ function filledNbr (i, $el, eraseMode) {
   $el.style.setProperty('--bg', color || 'transparent');
   coords[i].color = color;
 
-  $el.querySelector('.js-color').setAttribute('value', chroma(color).hex());
+  if(color) {
+    $el.querySelector('.js-color').setAttribute('value', chroma(color).hex());
+  }
 
   if (i > 0) { // left
     if ( coords[i-1].color ) {
