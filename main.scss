@@ -319,6 +319,14 @@ svg  {
   }
 }
 
+.button--views {
+  z-index: 5;
+}
+
+.button--outlined {
+  z-index: 6;
+}
+
 .button--views[aria-expanded] + .view-modes {
   opacity: 1;
 }
@@ -427,7 +435,8 @@ select {
 .view--circles--small .button--circles-small,
 .view--itten .button--itten,
 .view--pixels [data-mode="pixels"],
-.outlined .button--outlined {
+.outlined .button--outlined,
+.button--views[aria-expanded] {
   transform: translate(-10px, -10px);
   box-shadow: 1px 1px 0 var(--c-bg),
     2px 2px 0 var(--c-bg),
