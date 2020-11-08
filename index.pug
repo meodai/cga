@@ -37,7 +37,8 @@ html
             input(type='color').js-color.color-input
 
       .tools
-        img(alt='palette export', src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=').save.js-save
+        a(href="", download="color-palette.png", title="save as PNG").save-link.js-save-link
+          img(alt='palette export', src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=').save.js-save
 
         menu.main-menu
           li

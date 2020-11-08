@@ -20,6 +20,7 @@ $canvas.height = pixelSize * gridSize * 2;
 //$canvas.toDataURL();
 
 const $saveBtn = document.querySelector('.js-save');
+const $saveBtnLink = document.querySelector('.js-save-link');
 
 function setMode (mode) {
   currentMode = mode;
@@ -113,6 +114,7 @@ const coords = cubes.map(($cube, i) => {
 function updatePNG () {
   $saveBtn.src = $canvas.toDataURL();
   $favicon.href = $canvas.toDataURL();
+  $saveBtnLink.href =$canvas.toDataURL();
 }
 
 let timer;
