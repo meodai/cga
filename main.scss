@@ -347,6 +347,38 @@ svg  {
   transition: 200ms opacity,
     200ms transform cubic-bezier(.7, .3, 0, 1) 100ms;
   pointer-events: none;
+  /*
+  &:nth-child(4) {
+    transform: translate(0, 0);
+  }
+
+  &:nth-child(3) {
+    transform: translate(0, 100%);
+  }
+
+  &:nth-child(5) {
+    transform: translate(0, -100%);
+  }
+
+  &:nth-child(2) {
+    transform: translate(0, 200%);
+  }
+
+  &:nth-child(6) {
+    transform: translate(0, -200%);
+  }
+
+  &:nth-child(1) {
+    transform: translate(0, 300%);
+  }
+
+  &:nth-child(7) {
+    transform: translate(0, -300%);
+  }
+
+  &:nth-child(8) {
+    transform: translate(0, -400%);
+  }*/
 }
 
 .subnav-visible .main-menu .view-modes li {
@@ -371,7 +403,7 @@ svg  {
 
   &:nth-child(1),
   &:nth-child(7) {
-    transition-delay: 250ms, 150ms;
+    transition-delay: 250ms, 100ms;
   }
 
   &:nth-child(8) {
