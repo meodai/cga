@@ -321,7 +321,6 @@ svg  {
 
 .button--views[aria-expanded] + .view-modes {
   opacity: 1;
-  pointer-events: all;
 }
 
 .button--views[aria-expanded] {
@@ -335,21 +334,45 @@ svg  {
   }
 }
 
-.main-menu .view-modes {
+.main-menu .view-modes li {
   transform: translate(0, 0);
-  transition: 300ms opacity,
+  transition: 200ms opacity,
     200ms transform cubic-bezier(.7, .3, 0, 1) 100ms;
+  pointer-events: none;
 }
 
-.subnav-visible .main-menu .view-modes {
+.subnav-visible .main-menu .view-modes li {
   opacity: 1;
+  pointer-events: all;
   transform: translate(calc(100% + 4px), 0);
   transition: 300ms opacity 100ms,
     200ms transform cubic-bezier(.7, .3, 0, 1);
+
+  &:nth-child(4) {
+    transition-delay: 100ms, 0s;
+  }
+  &:nth-child(3),
+  &:nth-child(5) {
+    transition-delay: 150ms, 50ms;
+  }
+
+  &:nth-child(2),
+  &:nth-child(6) {
+    transition-delay: 200ms, 100ms;
+  }
+
+  &:nth-child(1),
+  &:nth-child(7) {
+    transition-delay: 250ms, 150ms;
+  }
+
+  &:nth-child(8) {
+    transition-delay: 300ms, 200ms;
+  }
 }
 
 @media (orientation:portrait) {
-  .subnav-visible .main-menu .view-modes {
+  .subnav-visible .main-menu .view-modes li {
     transform: translate(0, calc(-100% - 4px));
   }
 }
