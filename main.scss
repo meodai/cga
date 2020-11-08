@@ -132,7 +132,6 @@ svg  {
 
       //will-change: transform, border-radius;
 
-
       .view--cubes--small & {
         transform: scale(.5);
       }
@@ -239,22 +238,6 @@ svg  {
   width: calc(80vmin/8);
   height: 80vmin;
   background: var(--c-bg);
-
-  &::after {
-    display: none;
-    content: 'CGA';
-    font-size: 1.8vmax;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    font-weight: 600;
-    text-align: center;
-    height: calc(80vmin/8);
-    line-height: calc(80vmin/8 * 1.05);
-    background: var(--c-inverted);
-    color: var(--c-bg);
-  }
 
   menu {
     padding: 0;

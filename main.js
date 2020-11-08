@@ -119,6 +119,8 @@ function filledNbr (i, $el, eraseMode) {
   $el.style.setProperty('--bg', color || 'transparent');
   coords[i].color = color;
 
+  $el.querySelector('.js-color').setAttribute('value', chroma(color).hex());
+
   if (i > 0) { // left
     if ( coords[i-1].color ) {
       if (color) {
