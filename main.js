@@ -321,7 +321,9 @@ const $colorList = document.querySelector('.js-colorlist');
 
 
 function updateColorList (colors) {
-  let chromaColors = colors.map(c => chroma(c));
+  let chromaColors = colors.filter((item, pos) =>
+    colors.indexOf(item) == pos
+  ).map(c => chroma(c));
 
   fetch(`https://api.color.pizza/v1/${chromaColors.map(c => c.hex().replace('#', '')).join(',')}?goodnamesonly=true`)
   .then(d => d.json())
