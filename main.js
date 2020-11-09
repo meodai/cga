@@ -223,7 +223,7 @@ function filledNbr (i, $el, eraseMode) {
         coords[i+gridSize].$el.style.removeProperty('--mix-top');
         $el.style.removeProperty('--mix-bottom');
         colors.bottom = null;
-        coords[ii+gridSize].connections.bottom = null;
+        coords[i+gridSize].connections.bottom = null;
       }
     }
   }
