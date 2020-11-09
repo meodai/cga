@@ -1,14 +1,17 @@
 import chroma from 'chroma-js';
 
+const savedState = readFromUri();
+
 const $favicon = document.querySelector('[rel="icon"]');
 let cubes = Array.from(document.querySelectorAll('.cube'));
 let $doc = document.querySelector('body');
 let gridSize = 8;
-let currentColor = `hsl(${Math.random() * 360},${Math.random() * 100}%,${Math.random() * 100}%)`;
+let currentColor = randomHSL();
 let currentMode = 'edit';
 $doc.classList.add('mode--' + currentMode);
 $doc.classList.add('view--cubes');
-let colorMode = 'lab';
+let colorMode = 'lab' || savedState.colorMode;
+let viewMode = savedState && savedState.viewMode;
 
 
 const $canvas = document.createElement('canvas');
@@ -43,6 +46,7 @@ document.querySelector('.js-edit').addEventListener('click', () => {
 
 document.querySelector('.js-mix-mode').addEventListener('change', (e) => {
   colorMode = e.target.value;
+  updateUri();
   Array.from($doc.querySelectorAll('.filled')).forEach($el => {
     currentColor = $el.style.getPropertyValue('--bg');
     filledNbr(parseInt($el.getAttribute('data-i')), $el);
@@ -51,18 +55,23 @@ document.querySelector('.js-mix-mode').addEventListener('change', (e) => {
 
 const $modesTrigger = document.querySelector('.js-view-modes--trigger');
 
+function updateViewMode() {
+  updateUri()
+  const classNames = [];
+  Array.from(document.querySelectorAll('.js-view-mode')).forEach($e => {
+    classNames.push('view--' + $e.getAttribute('data-mode'));
+  });
+  classNames.forEach((cls) => {
+    $doc.classList.remove(cls);
+  });
+  $doc.classList.add('view--' + viewMode)
+}
+
 document.addEventListener('click', (e) => {
   const $target = e.target;
   if ($target.matches('.js-view-mode')) {
-    const mode = $target.getAttribute('data-mode');
-    const classNames = [];
-    Array.from(document.querySelectorAll('.js-view-mode')).forEach($e => {
-      classNames.push('view--' + $e.getAttribute('data-mode'));
-    });
-    classNames.forEach((cls) => {
-      $doc.classList.remove(cls);
-    });
-    $doc.classList.add( 'view--' + mode )
+    viewMode = $target.getAttribute('data-mode');
+    updateViewMode();
   } else if ($target.matches('.js-view-modes--trigger')) {
     $target.toggleAttribute('aria-expanded');
   } else if ($target.matches('.js-outlined')) {
@@ -114,14 +123,17 @@ const coords = cubes.map(($cube, i) => {
 function updatePNG () {
   $saveBtn.src = $canvas.toDataURL();
   $favicon.href = $canvas.toDataURL();
-  $saveBtnLink.href =$canvas.toDataURL();
+  $saveBtnLink.href = $canvas.toDataURL();
 }
 
 let timer;
 
 function filledNbr (i, $el, eraseMode) {
   clearTimeout(timer);
-  timer = setTimeout(updatePNG, 500);
+  timer = setTimeout(() => {
+    updatePNG();
+    updateUri();
+  }, 500);
   if (!$el.matches('.cube')) return;
 
   let color = currentColor;
@@ -134,7 +146,7 @@ function filledNbr (i, $el, eraseMode) {
     $el.classList.add('filled')
   }
 
-  $el.style.setProperty('--bg', color || 'transparent');
+  $el.style.setProperty('--bg', color || 'transparent');
   coords[i].color = color;
 
   if(color) {
@@ -235,7 +247,7 @@ function filledNbr (i, $el, eraseMode) {
 
 document.querySelector('.cubes').addEventListener('click', (e) => {
   const $el = e.target;
-  currentColor = `hsl(${Math.random() * 360},${Math.random() * 100}%,${Math.random() * 100}%)`
+  currentColor = randomHSL();
   if (currentMode === 'draw' || currentMode === 'edit') {
     filledNbr(parseInt($el.getAttribute('data-i')), $el);
   } else if ( currentMode === 'erase') {
@@ -243,18 +255,57 @@ document.querySelector('.cubes').addEventListener('click', (e) => {
   }
 }, true);
 
+function readFromUri() {
+  const params = window.location.search;
+  const stateString = new URLSearchParams(params).get("s");
+  if (stateString) {
+    return JSON.parse(atob(stateString));
+  }
+}
 
+function updateUri() {
+  let state = {
+    coords: [],
+    colorMode,
+    viewMode
+  }
 
-filledNbr(27, coords[27].$el);
-setTimeout(() => {
-  currentColor = `hsl(${Math.random() * 360},${Math.random() * 100}%,${Math.random() * 100}%)`;
-  filledNbr(35, coords[35].$el);
-},500);
-setTimeout(() => {
-  currentColor = `hsl(${Math.random() * 360},${Math.random() * 100}%,${Math.random() * 100}%)`;
-  filledNbr(36, coords[36].$el);
-},1000);
-setTimeout(() => {
-  currentColor = `hsl(${Math.random() * 360},${Math.random() * 100}%,${Math.random() * 100}%)`;
-  filledNbr(28, coords[28].$el);
-},1500);
+  coords.filter((coord) => coord.color).forEach((coord) => {
+    state.coords[coord.x + coord.y * gridSize] = {
+      x: coord.x,
+      y: coord.y,
+      color: coord.color,
+    }
+  });
+
+  const serializedState = btoa(JSON.stringify(state));
+  history.replaceState(history.state, document.title, "?s=" + serializedState);
+}
+
+function randomHSL() {
+  return `hsl(${Math.round(Math.random() * 360)},${Math.round(Math.random() * 100)}%,${Math.round(Math.random() * 100)}%)`;
+}
+
+updateViewMode()
+if (!savedState) {
+  filledNbr(27, coords[27].$el);
+  setTimeout(() => {
+    currentColor = randomHSL()
+    filledNbr(35, coords[35].$el);
+  }, 500);
+  setTimeout(() => {
+    currentColor = randomHSL();
+    filledNbr(36, coords[36].$el);
+  }, 1000);
+  setTimeout(() => {
+    currentColor = randomHSL();
+    filledNbr(28, coords[28].$el);
+  }, 1500);
+} else {
+  savedState.coords.forEach((savedColor, index) => {
+    if (savedColor) {
+      currentColor = savedColor.color;
+      filledNbr(index, coords[index].$el)
+    }
+  })
+}
