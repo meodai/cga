@@ -218,7 +218,7 @@ function filledNbr (i, $el, eraseMode) {
         coords[i+gridSize].$el.style.setProperty('--mix-top', col);
         $el.style.setProperty('--mix-bottom', col);
         colors.bottom = col;
-        coords[ii+gridSize].connections.bottom = col;
+        coords[i+gridSize].connections.bottom = col;
       } else {
         coords[i+gridSize].$el.style.removeProperty('--mix-top');
         $el.style.removeProperty('--mix-bottom');
