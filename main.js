@@ -116,6 +116,12 @@ const coords = cubes.map(($cube, i) => {
     x: i % gridSize,
     y: Math.floor(i / gridSize),
     color: null,
+    connections: {
+      top: null,
+      right: null,
+      bottom: null,
+      left: null,
+    },
   }
 });
 
@@ -161,25 +167,29 @@ function filledNbr (i, $el, eraseMode) {
         coords[i-1].$el.style.setProperty('--mix-right', col);
         $el.style.setProperty('--mix-left', col);
         colors.left = col;
+        coords[i-1].connections.left = col;
       } else {
         coords[i-1].$el.style.removeProperty('--mix-right');
         $el.style.removeProperty('--mix-left');
         colors.left = null;
+        coords[i-1].connections.left = null;
       }
     }
   }
 
-  if (i < coords.length - 2 && ((i+1)%gridSize)) { //right
+  if (i < coords.length - 2 && ((i+1) % gridSize)) { //right
     if ( coords[i+1].color ) {
       if(color) {
         let col = chroma.mix(color, coords[i+1].color, 0.5, colorMode);
         coords[i+1].$el.style.setProperty('--mix-left', col);
         $el.style.setProperty('--mix-right', col);
         colors.right = col;
+        coords[i+1].connections.right = col;
       } else {
         coords[i+1].$el.style.removeProperty('--mix-left');
         $el.style.removeProperty('--mix-right');
         colors.right = null;
+        coords[i+1].connections.right = null;
       }
     }
   }
@@ -191,10 +201,12 @@ function filledNbr (i, $el, eraseMode) {
         coords[i-gridSize].$el.style.setProperty('--mix-bottom', col);
         $el.style.setProperty('--mix-top', col);
         colors.top = col;
+        coords[i-gridSize].connections.top = col;
       } else {
         coords[i-gridSize].$el.style.removeProperty('--mix-bottom');
         $el.style.removeProperty('--mix-top');
         colors.top = null;
+        coords[i-gridSize].connections.top = null;
       }
     }
   }
@@ -206,10 +218,12 @@ function filledNbr (i, $el, eraseMode) {
         coords[i+gridSize].$el.style.setProperty('--mix-top', col);
         $el.style.setProperty('--mix-bottom', col);
         colors.bottom = col;
+        coords[ii+gridSize].connections.bottom = col;
       } else {
         coords[i+gridSize].$el.style.removeProperty('--mix-top');
         $el.style.removeProperty('--mix-bottom');
         colors.bottom = null;
+        coords[ii+gridSize].connections.bottom = null;
       }
     }
   }
@@ -230,7 +244,6 @@ function filledNbr (i, $el, eraseMode) {
       if ( key === 'top') {
         ctx.fillStyle = colors[key];
         ctx[paintMethod](el.x/gridSize * pixelSize * gridSize * 2, el.y/gridSize * pixelSize * gridSize * 2 - pixelSize, pixelSize, pixelSize);
-
       } else if ( key === 'bottom') {
         ctx.fillStyle = colors[key];
         ctx[paintMethod](el.x/gridSize * pixelSize * gridSize * 2, el.y/gridSize * pixelSize * gridSize * 2 + pixelSize, pixelSize, pixelSize);
@@ -246,7 +259,18 @@ function filledNbr (i, $el, eraseMode) {
 
   clearTimeout(namingTimer);
   namingTimer = setTimeout(() => {
-    updateColorList( coords.filter(c => !!c.color).map(c => c.color) );
+    const cols = [];
+
+    coords.forEach(col => {
+      if (col.color) {
+        cols.push(chroma(col.color).hex());
+        Object.values(col.connections).forEach(subCol => {
+          if (subCol) { cols.push(subCol.hex()) }
+        });
+      }
+    });
+
+    updateColorList( cols );
   }, 1000);
 
 }
@@ -292,7 +316,8 @@ function randomHSL() {
   return `hsl(${Math.round(Math.random() * 360)},${Math.round(Math.random() * 100)}%,${Math.round(Math.random() * 100)}%)`;
 }
 
-updateViewMode()
+updateViewMode();
+
 if (!savedState) {
   filledNbr(27, coords[27].$el);
   setTimeout(() => {
