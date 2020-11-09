@@ -346,25 +346,28 @@ const $colorList = document.querySelector('.js-colorlist');
 
 
 function updateColorList (colors) {
-  let chromaColors = colors.filter((item, pos) =>
-    colors.indexOf(item) == pos
-  ).map(c => chroma(c));
+  if (colors && colors.length) {
+    let chromaColors = colors.filter((item, pos) =>
+      colors.indexOf(item) == pos
+    ).map(c => chroma(c));
 
-  fetch(`https://api.color.pizza/v1/${chromaColors.map(c => c.hex().replace('#', '')).join(',')}?goodnamesonly=true`)
-  .then(d => d.json())
-  .then(d => {
-    const colorEntryStrings = d.colors.map((col, i) => `
-    <li class="colorlist__entry">
-      <span class="colorSwatch" style="--color: ${chromaColors[i].hex()}">
-      </span>
-      <div class="label">
-        <h2>${col.name}</h2>
-        <pre>${chromaColors[i].hex()} / ${chromaColors[i].css('rgb')} / ${chromaColors[i].css('hsl')}</pre>
-      </div>
-    </li>
-  `);
+    fetch(`https://api.color.pizza/v1/${chromaColors.map(c => c.hex().replace('#', '')).join(',')}?goodnamesonly=true`)
+    .then(d => d.json())
+    .then(d => {
+      const colorEntryStrings = d.colors.map((col, i) => `
+      <li class="colorlist__entry">
+        <span class="colorSwatch" style="--color: ${chromaColors[i].hex()}">
+        </span>
+        <div class="label">
+          <h2>${col.name}</h2>
+          <pre>${chromaColors[i].hex()} / ${chromaColors[i].css('rgb')} / ${chromaColors[i].css('hsl')}</pre>
+        </div>
+      </li>
+    `);
 
-  $colorList.innerHTML = colorEntryStrings.join('');
-  });
-
+    $colorList.innerHTML = colorEntryStrings.join('');
+    });
+  } else {
+    $colorList.innerHTML = '';
+  }
 }
