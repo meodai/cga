@@ -130,6 +130,7 @@ let timer, namingTimer;
 
 function filledNbr (i, $el, eraseMode) {
   clearTimeout(timer);
+
   timer = setTimeout(() => {
     updatePNG();
     updateUri();
@@ -239,7 +240,6 @@ function filledNbr (i, $el, eraseMode) {
       } else {
         ctx.fillStyle = colors[key];
         ctx[paintMethod](el.x/gridSize * pixelSize * gridSize * 2 + pixelSize, el.y/gridSize * pixelSize * gridSize * 2, pixelSize, pixelSize);
-
       }
     })
   })
