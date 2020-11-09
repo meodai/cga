@@ -126,7 +126,7 @@ function updatePNG () {
   $saveBtnLink.href = $canvas.toDataURL();
 }
 
-let timer;
+let timer, namingTimer;
 
 function filledNbr (i, $el, eraseMode) {
   clearTimeout(timer);
@@ -243,6 +243,12 @@ function filledNbr (i, $el, eraseMode) {
       }
     })
   })
+
+  clearTimeout(namingTimer);
+  namingTimer = setTimeout(() => {
+    updateColorList( coords.filter(c => !!c.color).map(c => c.color) );
+  }, 1000);
+
 }
 
 document.querySelector('.cubes').addEventListener('click', (e) => {
@@ -308,4 +314,30 @@ if (!savedState) {
       filledNbr(index, coords[index].$el)
     }
   })
+}
+
+
+const $colorList = document.querySelector('.js-colorlist');
+
+
+function updateColorList (colors) {
+  let chromaColors = colors.map(c => chroma(c));
+
+  fetch(`https://api.color.pizza/v1/${chromaColors.map(c => c.hex().replace('#', '')).join(',')}?goodnamesonly=true`)
+  .then(d => d.json())
+  .then(d => {
+    const colorEntryStrings = d.colors.map((col, i) => `
+    <li class="colorlist__entry">
+      <span class="colorSwatch" style="--color: ${chromaColors[i].hex()}">
+      </span>
+      <div class="label">
+        <h2>${col.name}</h2>
+        <pre>${chromaColors[i].hex()} / ${chromaColors[i].css('rgb')} / ${chromaColors[i].css('hsl')}</pre>
+      </div>
+    </li>
+  `);
+
+  $colorList.innerHTML = colorEntryStrings.join('');
+  });
+
 }
