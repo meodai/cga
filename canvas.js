@@ -1,5 +1,4 @@
 import chroma from 'chroma-js';
-
 console.clear();
 
 const $container = document.querySelector('[data-convas-container]');
@@ -117,6 +116,35 @@ function drawGrid (lineSize = 2, color = '#212121') {
 drawGrid();
 
 let currentColor = chroma.random();
+const intersectionStyles = {
+  'rhombus': (pixel1, pixel2, pixelSize, scaleFactor) => {
+    intersectionCtx.translate(
+      (pixel1.x + pixel2.x) * pixelSize / 2 + (pixelSize / 2),
+      (pixel1.y + pixel2.y) * pixelSize / 2
+    );
+
+    intersectionCtx.rotate(45 * Math.PI / 180);
+
+    const scale = pixelsize / Math.sqrt(Math.pow(pixelsize, 2) * 2) ;
+
+    intersectionCtx.scale(scale, scale);
+
+    intersectionCtx.scale(scaleFactor, scaleFactor);
+    intersectionCtx.translate(pixelSize - scaleFactor * pixelSize, pixelSize - scaleFactor * pixelSize)
+
+
+    intersectionCtx.fillRect(
+      0,
+      0,
+      pixelsize,
+      pixelsize
+    )
+  },
+  'circle': (pixel1, pixel2, pixelSize) => {},
+  'pixel': (pixel1, pixel2, pixelSize) => {},
+  'emboss': (pixel1, pixel2, pixelSize) => {},
+};
+let interesectionStlye = Object.keys(intersectionStyles)[0];
 
 function drawPixel(x, y) {
   ctx.fillStyle = currentColor.hex();
@@ -125,26 +153,9 @@ function drawPixel(x, y) {
 
 function drawIntersection(pixel1, pixel2, pixelSize) {
   const intersectionColor = chroma.mix(pixel1.color, pixel2.color, 0.5, currentColorMode);
-  intersectionCtx.save();
-
   intersectionCtx.fillStyle = intersectionColor.hex();
-
-  intersectionCtx.translate(
-    (pixel1.x + pixel2.x) * pixelSize / 2 + (pixelSize / 2),
-    (pixel1.y + pixel2.y) * pixelSize / 2
-  );
-
-  intersectionCtx.rotate(45 * Math.PI / 180);
-
-  let scale = pixelsize / Math.sqrt(Math.pow(pixelsize, 2) * 2) ;
-
-  intersectionCtx.fillRect(
-    0,
-    0,
-    pixelsize * scale,
-    pixelsize * scale
-  )
-
+  intersectionCtx.save();
+  intersectionStyles[interesectionStlye](pixel1, pixel2, pixelSize, 1);
   intersectionCtx.restore();
 }
 
