@@ -31,18 +31,40 @@ if (window.devicePixelRatio > 1) {
 
 document.querySelector('body').appendChild($can);
 
-const pixelsX = 6;
-const pixelsY = 6;
+const pixelsX = 30;
+const pixelsY = 30;
 
 const pixelsize = w / pixelsX;
 
+// create an array of array for each x and y coordinate
+// a matrix!
+const pixelMatrix = new Array(pixelsY).fill('').map(y => new Array(pixelsX).fill(false));
+
 const pixelList = (new Array(pixelsX * pixelsY)).fill('').map((d, i) => {
-  return {
-    x: i % pixelsX,
-    y: Math.floor(i / pixelsY),
-    color: null,
-  }
+  const y = Math.floor(i / pixelsY)
+  const x = i % pixelsX;
+  const pixelObj = false;
+
+  pixelMatrix[x][y] = pixelObj;
+
+  return null;
 });
+
+class Pixel {
+  constructor (color, x, y) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+
+    this.hasCollision = false;
+    this.collisions = [];
+  }
+
+  getCollisions () {
+
+  }
+};
+
 
 const connectionList = (new Array((pixelsX - 1) * (pixelsY - 1)))
 .fill('').map((d, i) => {
@@ -53,14 +75,14 @@ const connectionList = (new Array((pixelsX - 1) * (pixelsY - 1)))
   }
 });
 
-function doesCollide (x1, y1, x2, y2) {
-  const touchesX = (x1 - 1 === x2 || x1 + 1 === x2) && y1 === y2;
-  const touchesY = (y1 - 1 === y2 || y1 + 1 === y2) && x1 === x2;
+function doesPixelCollide (x1, y1, x2, y2) {
+  const touchesTop = y1 - 1 === y2 && x1 === x2;
+  const touchesLeft = x1 - 1 === x2 && y1 === y2;
+  const touchesRight = x1 + 1 === x2 && y1 === y2;
+  const touchesBottom = y1 + 1 === y2 && x1 === x2;
 
-  return touchesX || touchesY;
-}
-
-console.log(connectionList)
+  return [touchesTop, touchesRight, touchesBottom, touchesLeft];
+};
 
 function drawGrid (lineSize = 2, color = '#212121') {
   ctx.lineWidth = lineSize;
@@ -103,34 +125,58 @@ window.addEventListener('resize', () => {
   scale = canRect.width / w;
 });
 
-console.log(canRect.width)
+function updateCollisions (x, y) {
+  const pixelUp = !!y && pixelMatrix[y - 1][x];
+  const pixelRight = pixelsX - 1 !== x && pixelMatrix[y][x + 1];
+  const pixelDown = pixelsY - 1 !== y && pixelMatrix[y + 1][x];
+  const pixelLeft = !!x && pixelMatrix[y][x - 1];
 
-$can.addEventListener('pointerdown', (e) => {
+  console.log(pixelUp, pixelRight, pixelDown, pixelLeft);
 
-  pointerdown = true;
-  currentColor = chroma.random();
+  /*
+  pixelList.forEach(pixel => {
+    if ( pixel.color ) { // pixel has an actual color
+      // current collisions
 
-  const x = Math.floor((e.offsetX / canRect.width) * pixelsX) * pixelsize;
-  const y = Math.floor((e.offsetY / canRect.height) * pixelsY) * pixelsize;
+      const collisionsArray = doesPixelCollide(x, y, pixel.x, pixel.y);
+
+      // has any collisions
+      if ( collisionsArray.filter(collide => collide).lenght ) {
+        pixel.hasCollisions = true;
+        pixel.collisions = collisionsArray;
+      }
+    };
+  });*/
+}
+
+function addPixelList(x, y, color) {
+  const pixel = new Pixel(color, x, y);
+  pixelMatrix[y][x] = pixel;
+}
+
+function draw (mouseEvent) {
+  const x = Math.floor((mouseEvent.offsetX / canRect.width) * pixelsX);
+  const y = Math.floor((mouseEvent.offsetY / canRect.height) * pixelsY);
+
+  addPixelList(x,y, currentColor);
+  updateCollisions(x, y);
 
   drawPixel(
-    x,
-    y
-    );
-  });
+    x * pixelsize, y * pixelsize
+  );
+};
 
-  $doc.addEventListener('pointerup', (e) => {
-    pointerdown = false;
-  });
+$can.addEventListener('pointerdown', (e) => {
+  pointerdown = true;
+  currentColor = chroma.random();
+  draw(e);
+});
 
-  $can.addEventListener('pointermove', e => {
-    if (!pointerdown) return;
+$doc.addEventListener('pointerup', (e) => {
+  pointerdown = false;
+});
 
-    const x = Math.floor((e.offsetX / canRect.width) * pixelsX) * pixelsize;
-    const y = Math.floor((e.offsetY / canRect.height) * pixelsY) * pixelsize;
-
-    drawPixel(
-      x,
-      y
-      );
-    });
+$can.addEventListener('pointermove', e => {
+  if (!pointerdown) return;
+  draw(e);
+});
