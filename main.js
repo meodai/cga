@@ -10,8 +10,8 @@ let currentColor = randomHSL();
 let currentMode = 'edit';
 $doc.classList.add('mode--' + currentMode);
 $doc.classList.add('view--cubes');
-let colorMode = 'lab' || savedState.colorMode;
-let viewMode = savedState && savedState.viewMode;
+let colorMode = 'lab' || savedState.cm;
+let viewMode = savedState && savedState.vm;
 
 
 const $canvas = document.createElement('canvas');
@@ -295,17 +295,13 @@ function readFromUri() {
 
 function updateUri() {
   let state = {
-    coords: [],
-    colorMode,
-    viewMode
+    c: {},
+    cm: colorMode,
+    vm: viewMode
   }
 
   coords.filter((coord) => coord.color).forEach((coord) => {
-    state.coords[coord.x + coord.y * gridSize] = {
-      x: coord.x,
-      y: coord.y,
-      color: coord.color,
-    }
+    state.c[coord.x + coord.y * gridSize] = chroma(coord.color).num();
   });
 
   const serializedState = btoa(JSON.stringify(state));
@@ -333,11 +329,10 @@ if (!savedState) {
     filledNbr(28, coords[28].$el);
   }, 1500);
 } else {
-  savedState.coords.forEach((savedColor, index) => {
-    if (savedColor) {
-      currentColor = savedColor.color;
-      filledNbr(index, coords[index].$el)
-    }
+  Object.keys(savedState.c).forEach((key ) => {
+    let index = parseInt(key);
+    currentColor = chroma(savedState.c[key]).hex();
+    filledNbr(index, coords[index].$el)
   })
 }
 
