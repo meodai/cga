@@ -2,20 +2,22 @@ import chroma from 'chroma-js';
 
 console.clear();
 
-const $prevCan = document.querySelector('canvas');
-
-if ($prevCan) {
-  $prevCan.parentElement().removeChild($prevCan);
-}
+const $container = document.querySelector('[data-convas-container]');
 
 const $can = document.createElement('canvas');
 const ctx = $can.getContext('2d');
+
+const $interssectionCan = document.createElement('canvas');
+const intersectionCtx = $interssectionCan.getContext('2d');
 
 const w = window.innerWidth * .8;
 const h = window.innerWidth * .8;
 
 $can.width = w;
 $can.height = h;
+
+const colorModes = ['lab', 'hsl', 'hsv', 'hsi', 'lch', 'rgb', 'lrgb'];
+let currentColorMode = colorModes[0];
 
 if (window.devicePixelRatio > 1) {
   const canWidth = $can.width;
@@ -26,13 +28,20 @@ if (window.devicePixelRatio > 1) {
   $can.style.width = canWidth;
   $can.style.height = canHeight;
 
+  $interssectionCan.width = canWidth * window.devicePixelRatio;
+  $interssectionCan.height = canHeight * window.devicePixelRatio;
+  $interssectionCan.style.width = canWidth;
+  $interssectionCan.style.height = canHeight;
+
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  intersectionCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
 }
 
-document.querySelector('body').appendChild($can);
+$container.appendChild($can);
+$container.appendChild($interssectionCan);
 
-const pixelsX = 30;
-const pixelsY = 30;
+const pixelsX = 10;
+const pixelsY = 10;
 
 const pixelsize = w / pixelsX;
 
@@ -55,15 +64,25 @@ class Pixel {
     this.x = x;
     this.y = y;
     this.color = color;
-
-    this.hasCollision = false;
-    this.collisions = [];
   }
 
-  getCollisions () {
+  get collidingPixels () {
+    const y = this.y;
+    const x = this.x;
 
+    const pixelUp = !!y && pixelMatrix[y - 1][x];
+    const pixelRight = pixelsX - 1 !== x && pixelMatrix[y][x + 1];
+    const pixelDown = pixelsY - 1 !== y && pixelMatrix[y + 1][x];
+    const pixelLeft = !!x && pixelMatrix[y][x - 1];
+
+    return [pixelUp, pixelRight, pixelDown, pixelLeft]
+  }
+
+  get isColliding () {
+    return this.collidingPixels.reduce((isColliding, collision) => (rem && !!collision), false);
   }
 };
+
 
 
 const connectionList = (new Array((pixelsX - 1) * (pixelsY - 1)))
@@ -74,15 +93,6 @@ const connectionList = (new Array((pixelsX - 1) * (pixelsY - 1)))
     color: null,
   }
 });
-
-function doesPixelCollide (x1, y1, x2, y2) {
-  const touchesTop = y1 - 1 === y2 && x1 === x2;
-  const touchesLeft = x1 - 1 === x2 && y1 === y2;
-  const touchesRight = x1 + 1 === x2 && y1 === y2;
-  const touchesBottom = y1 + 1 === y2 && x1 === x2;
-
-  return [touchesTop, touchesRight, touchesBottom, touchesLeft];
-};
 
 function drawGrid (lineSize = 2, color = '#212121') {
   ctx.lineWidth = lineSize;
@@ -110,7 +120,32 @@ let currentColor = chroma.random();
 
 function drawPixel(x, y) {
   ctx.fillStyle = currentColor.hex();
-  ctx.fillRect(x, y, pixelsize, pixelsize)
+  ctx.fillRect(x, y, pixelsize, pixelsize);
+}
+
+function drawIntersection(pixel1, pixel2, pixelSize) {
+  const intersectionColor = chroma.mix(pixel1.color, pixel2.color, 0.5, currentColorMode);
+  intersectionCtx.save();
+
+  intersectionCtx.fillStyle = intersectionColor.hex();
+
+  intersectionCtx.translate(
+    (pixel1.x + pixel2.x) * pixelSize / 2 + (pixelSize / 2),
+    (pixel1.y + pixel2.y) * pixelSize / 2
+  );
+
+  intersectionCtx.rotate(45 * Math.PI / 180);
+
+  let scale = pixelsize / Math.sqrt(Math.pow(pixelsize, 2) * 2) ;
+
+  intersectionCtx.fillRect(
+    0,
+    0,
+    pixelsize * scale,
+    pixelsize * scale
+  )
+
+  intersectionCtx.restore();
 }
 
 let pointerdown = false;
@@ -125,41 +160,29 @@ window.addEventListener('resize', () => {
   scale = canRect.width / w;
 });
 
-function updateCollisions (x, y) {
-  const pixelUp = !!y && pixelMatrix[y - 1][x];
-  const pixelRight = pixelsX - 1 !== x && pixelMatrix[y][x + 1];
-  const pixelDown = pixelsY - 1 !== y && pixelMatrix[y + 1][x];
-  const pixelLeft = !!x && pixelMatrix[y][x - 1];
-
-  console.log(pixelUp, pixelRight, pixelDown, pixelLeft);
-
-  /*
-  pixelList.forEach(pixel => {
-    if ( pixel.color ) { // pixel has an actual color
-      // current collisions
-
-      const collisionsArray = doesPixelCollide(x, y, pixel.x, pixel.y);
-
-      // has any collisions
-      if ( collisionsArray.filter(collide => collide).lenght ) {
-        pixel.hasCollisions = true;
-        pixel.collisions = collisionsArray;
-      }
-    };
-  });*/
-}
-
 function addPixelList(x, y, color) {
   const pixel = new Pixel(color, x, y);
   pixelMatrix[y][x] = pixel;
+  return pixel;
+}
+
+function translateFromMatrixToPixels (x, y) {
+  return [
+    Math.floor((x / canRect.width) * pixelsX),
+    Math.floor((y / canRect.width) * pixelsY),
+  ];
 }
 
 function draw (mouseEvent) {
-  const x = Math.floor((mouseEvent.offsetX / canRect.width) * pixelsX);
-  const y = Math.floor((mouseEvent.offsetY / canRect.height) * pixelsY);
+  const [x, y] = translateFromMatrixToPixels(mouseEvent.offsetX, mouseEvent.offsetY);
 
-  addPixelList(x,y, currentColor);
-  updateCollisions(x, y);
+  const pixel = addPixelList(x, y, currentColor);
+  //updateCollisions(x, y);
+  pixel.collidingPixels.forEach((intersectinPixel) => {
+    if (intersectinPixel) {
+      drawIntersection(pixel, intersectinPixel, pixelsize);
+    };
+  })
 
   drawPixel(
     x * pixelsize, y * pixelsize

@@ -21,12 +21,26 @@
   <link rel="icon"
     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
   <style>
-    canvas {
+    .canvas {
+      position: relative;
       display: block;
       width: 80vmin;
-      height: auto;
+      height: 80vmin;
       margin: 10vmin auto;
       box-shadow: 0 0 0 4px #212121;
+    }
+
+    .canvas canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .canvas canvas:first-child {
+      pointer-events: all;
     }
 
     /*
@@ -52,7 +66,9 @@
 </head>
 
 <body>
+  <div class="canvas" data-convas-container>
 
+  </div>
   <script src="canvas.js"></script>
 </body>
 
