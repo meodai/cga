@@ -5,7 +5,7 @@
   "main": "index.pug",
   "scripts": {
     "start": "parcel index.pug",
-    "build": "parcel build index.pug",
+    "build": "parcel build *.pug",
     "test": "npm run build"
   },
   "repository": {

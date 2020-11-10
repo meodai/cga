@@ -117,7 +117,9 @@ function drawGrid (lineSize = 2, color = '#212121') {
 
 drawGrid();
 
-let currentColor = chroma.random();
+let currentColor = chroma(
+  `hsl(${Math.round(Math.random() * 360)},${Math.round(Math.random() * 100)}%,${Math.round(Math.random() * 100)}%)`
+);
 const intersectionStyles = {
   'rhombus': (pixel1, pixel2, pixelSize, scaleFactor) => {
     intersectionCtx.translate(
