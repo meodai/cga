@@ -1,4 +1,6 @@
 import chroma from 'chroma-js';
+import anime from 'animejs/lib/anime.es.js';
+
 console.clear();
 
 const $container = document.querySelector('[data-convas-container]');
@@ -146,13 +148,16 @@ const intersectionStyles = {
 };
 let interesectionStlye = Object.keys(intersectionStyles)[0];
 
-function drawPixel(x, y) {
-  ctx.fillStyle = currentColor.hex();
-  ctx.fillRect(x, y, pixelsize, pixelsize);
+function drawPixel(x, y, size = pixelsize, opacity = 1) {
+  ctx.clearRect(x, y, size, size);
+  ctx.fillStyle = currentColor.alpha(opacity).hex();
+  ctx.fillRect(x, y, size, size);
 }
 
-function drawIntersection(pixel1, pixel2, pixelSize) {
-  const intersectionColor = chroma.mix(pixel1.color, pixel2.color, 0.5, currentColorMode);
+function drawIntersection(pixel1, pixel2, pixelSize, opacity = 1) {
+  const intersectionColor = chroma.mix(pixel1.color, pixel2.color, opacity * .5, currentColorMode);
+  //intersectionColor.alpha(opacity);
+
   intersectionCtx.fillStyle = intersectionColor.hex();
   intersectionCtx.save();
   intersectionStyles[interesectionStlye](pixel1, pixel2, pixelSize, 1);
@@ -189,15 +194,75 @@ function draw (mouseEvent) {
 
   const pixel = addPixelList(x, y, currentColor);
   //updateCollisions(x, y);
+
+  const animation = []
   pixel.collidingPixels.forEach((intersectinPixel) => {
     if (intersectinPixel) {
-      drawIntersection(pixel, intersectinPixel, pixelsize);
+      //drawIntersection(pixel, intersectinPixel, pixelsize);
+
+      let intersectTransform = {
+        scale: 1,
+        opacity: 0,
+      };
+
+      animation.push(anime({
+        targets: intersectTransform,
+        scale: 1,
+        delay: 300,
+        opacity: 1,
+        autoplay: false,
+        duration: 300,
+        easing: 'linear',
+        update: function () {
+          drawIntersection(
+            pixel,
+            intersectinPixel,
+            pixelsize,
+            intersectTransform.opacity
+          );
+        }
+      }));
+
     };
   })
 
-  drawPixel(
-    x * pixelsize, y * pixelsize
+  let transform = {
+    scale: 1,
+    opacity: 0,
+  };
+
+  animation.push(
+    anime({
+      targets: transform,
+      scale: 1,
+      opacity: 1,
+      duration: 300,
+      autoplay: false,
+      easing: 'linear',
+      update: function () {
+        drawPixel(
+          x * pixelsize,
+          y * pixelsize,
+          pixelsize,
+          transform.opacity
+        )
+        /* // animate with scale
+        drawPixel(
+          ((pixelsize * .5) - (pixelsize * 0.5 * transform.scale)) + x * pixelsize + transform.scale,
+          ((pixelsize * .5) - (pixelsize * 0.5 * transform.scale)) + y * pixelsize + transform.scale,
+          transform.scale * pixelsize,
+          transform.opacity
+        )
+        */
+      }
+    })
   );
+
+  /*drawPixel(
+    x * pixelsize, y * pixelsize
+  );*/
+
+  animation.forEach(anim => anim.play());
 };
 
 $can.addEventListener('pointerdown', (e) => {

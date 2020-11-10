@@ -29,6 +29,7 @@
     "sass": "^1.29.0"
   },
   "dependencies": {
+    "animejs": "^3.2.1",
     "chroma-js": "^2.1.0"
   },
   "staticFiles": {
