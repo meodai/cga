@@ -3,6 +3,14 @@ import anime from 'animejs/lib/anime.es.js';
 
 console.clear();
 
+let editMode = 'draw';
+
+document.querySelector('body').addEventListener('pointerdown', (e) => {
+  if (e.target.matches('[data-mode]')) {
+    editMode = e.target.dataset.mode;
+  }
+})
+
 const $container = document.querySelector('[data-convas-container]');
 
 const $can = document.createElement('canvas');
@@ -41,8 +49,8 @@ if (window.devicePixelRatio > 1) {
 $container.appendChild($can);
 $container.appendChild($interssectionCan);
 
-const pixelsX = 10;
-const pixelsY = 10;
+const pixelsX = 9;
+const pixelsY = 9;
 
 const pixelsize = w / pixelsX;
 
@@ -76,11 +84,14 @@ class Pixel {
     const pixelDown = pixelsY - 1 !== y && pixelMatrix[y + 1][x];
     const pixelLeft = !!x && pixelMatrix[y][x - 1];
 
-    return [pixelUp, pixelRight, pixelDown, pixelLeft]
+    return [pixelUp, pixelRight, pixelDown, pixelLeft];
   }
 
   get isColliding () {
     return this.collidingPixels.reduce((isColliding, collision) => (rem && !!collision), false);
+  }
+
+  destroy () {
   }
 };
 
@@ -95,7 +106,7 @@ const connectionList = (new Array((pixelsX - 1) * (pixelsY - 1)))
   }
 });
 
-function drawGrid (lineSize = 2, color = '#212121') {
+function drawGrid (lineSize = 1, color = 'rgba(0,0,0,.07)') {
   ctx.lineWidth = lineSize;
   ctx.strokeStyle = color;
 
@@ -106,6 +117,7 @@ function drawGrid (lineSize = 2, color = '#212121') {
     ctx.closePath();
     ctx.stroke();
   }
+
   for (let y = 0; y < pixelsY + 1; y++) {
     ctx.beginPath();
     ctx.moveTo(0, y * pixelsize);
@@ -120,6 +132,7 @@ drawGrid();
 let currentColor = chroma(
   `hsl(${Math.round(Math.random() * 360)},${Math.round(Math.random() * 100)}%,${Math.round(Math.random() * 100)}%)`
 );
+
 const intersectionStyles = {
   'rhombus': (pixel1, pixel2, pixelSize, scaleFactor) => {
     intersectionCtx.translate(
@@ -150,19 +163,23 @@ const intersectionStyles = {
 };
 let interesectionStlye = Object.keys(intersectionStyles)[0];
 
-function drawPixel(x, y, size = pixelsize, opacity = 1) {
-  ctx.clearRect(x, y, size, size);
-  ctx.fillStyle = currentColor.alpha(opacity).hex();
-  ctx.fillRect(x, y, size, size);
+function drawPixel (pixel, size = pixelsize, opacity = 1, clearRect = true) {
+  if ( clearRect || editMode !== 'eraze' ) {
+    ctx.clearRect(pixel.x * size, pixel.y * size, size, size);
+  }
+  if ( editMode !== 'eraze' ) {
+    ctx.fillStyle = currentColor.alpha(opacity).hex();
+    ctx.fillRect(pixel.x * size, pixel.y * size, size, size);
+  }
 }
 
-function drawIntersection(pixel1, pixel2, pixelSize, opacity = 1) {
+function drawIntersection(pixel1, pixel2, size = pixelsize, opacity = 1) {
   const intersectionColor = chroma.mix(pixel1.color, pixel2.color, opacity * .5, currentColorMode);
   //intersectionColor.alpha(opacity);
 
   intersectionCtx.fillStyle = intersectionColor.hex();
   intersectionCtx.save();
-  intersectionStyles[interesectionStlye](pixel1, pixel2, pixelSize, 1);
+  intersectionStyles[interesectionStlye](pixel1, pixel2, size, 1);
   intersectionCtx.restore();
 }
 
@@ -184,18 +201,35 @@ function addPixelList(x, y, color) {
   return pixel;
 }
 
-function translateFromMatrixToPixels (x, y) {
+function translateFromPXtoMatrix (x, y) {
   return [
     Math.floor((x / canRect.width) * pixelsX),
     Math.floor((y / canRect.width) * pixelsY),
   ];
 }
 
+let prevX = null, prevY = null;
+
 function draw (mouseEvent) {
-  const [x, y] = translateFromMatrixToPixels(mouseEvent.offsetX, mouseEvent.offsetY);
+  const [x, y] = translateFromPXtoMatrix(mouseEvent.offsetX, mouseEvent.offsetY);
+
+  let replacePixel = false;
+
+  if (pixelMatrix[y][x]) {
+    replacePixel = true;
+  }
+
+  if (prevX !== x || prevY !== y) {
+    prevX = x;
+    prevY = y;
+    //currentColor = chroma(currentColor).set('hsl.h', '+20');
+  }
+
 
   const pixel = addPixelList(x, y, currentColor);
   //updateCollisions(x, y);
+
+
 
   const animation = []
   pixel.collidingPixels.forEach((intersectinPixel) => {
@@ -243,10 +277,10 @@ function draw (mouseEvent) {
       easing: 'linear',
       update: function () {
         drawPixel(
-          x * pixelsize,
-          y * pixelsize,
+          pixel,
           pixelsize,
-          transform.opacity
+          transform.opacity,
+          !replacePixel
         )
         /* // animate with scale
         drawPixel(
@@ -273,8 +307,10 @@ $can.addEventListener('pointerdown', (e) => {
   draw(e);
 });
 
+
 $doc.addEventListener('pointerup', (e) => {
   pointerdown = false;
+  procesLine();
 });
 
 $can.addEventListener('pointermove', e => {
