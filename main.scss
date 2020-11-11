@@ -94,6 +94,7 @@ svg  {
     transition: 200ms transform;
   }
 
+
   .view--pixels & {
     background-color: transparent;
 
@@ -108,6 +109,20 @@ svg  {
       transform: translate(-50%, -50%) scale(.75);
     }
   }
+  .view--pattern &__inner {
+    width: 200%;
+    height: 200%;
+    i {
+      transform: scaleY(.5);
+      border-radius: 50%;
+    }
+  }
+
+  .view--grid &__inner {
+    width: 200%;
+    height: 200%;
+    transform: translate(-50%, -50%);
+  }
 
   &__inner {
     z-index: 2;
@@ -121,6 +136,7 @@ svg  {
     flex-wrap: wrap;
     transform: translate(-50%, -50%) rotate(-45deg);
     pointer-events: none;
+
 
     i {
       display: block;
@@ -452,6 +468,8 @@ select {
 .view--itten .button--itten,
 .view--pixels [data-mode="pixels"],
 .outlined .button--outlined,
+.view--grid .button--grid,
+.view--pattern .button--pattern,
 .button--views[aria-expanded] {
   transform: translate(-10px, -10px);
   box-shadow: 1px 1px 0 var(--c-bg),
