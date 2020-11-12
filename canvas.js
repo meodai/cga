@@ -3,14 +3,16 @@ import anime from 'animejs/lib/anime.es.js';
 
 console.clear();
 
-let editMode = 'draw';
+// app & canvas setup
+//-------------------------------
 
-document.querySelector('body').addEventListener('pointerdown', (e) => {
-  if (e.target.matches('[data-mode]')) {
-    editMode = e.target.dataset.mode;
-  }
-})
+const w = window.innerWidth * .8;
+const h = window.innerWidth * .8;
 
+const pixelsX = 9;
+const pixelsY = 9;
+
+const pixelsize = w / pixelsX;
 const $container = document.querySelector('[data-convas-container]');
 
 const $can = document.createElement('canvas');
@@ -19,14 +21,9 @@ const ctx = $can.getContext('2d');
 const $interssectionCan = document.createElement('canvas');
 const intersectionCtx = $interssectionCan.getContext('2d');
 
-const w = window.innerWidth * .8;
-const h = window.innerWidth * .8;
-
 $can.width = w;
 $can.height = h;
 
-const colorModes = ['lab', 'hsl', 'hsv', 'hsi', 'lch', 'rgb', 'lrgb'];
-let currentColorMode = colorModes[0];
 
 if (window.devicePixelRatio > 1) {
   const canWidth = $can.width;
@@ -49,63 +46,8 @@ if (window.devicePixelRatio > 1) {
 $container.appendChild($can);
 $container.appendChild($interssectionCan);
 
-const pixelsX = 9;
-const pixelsY = 9;
 
-const pixelsize = w / pixelsX;
-
-// create an array of array for each x and y coordinate
-// a matrix!
-const pixelMatrix = new Array(pixelsY).fill('').map(y => new Array(pixelsX).fill(false));
-
-const pixelList = (new Array(pixelsX * pixelsY)).fill('').map((d, i) => {
-  const y = Math.floor(i / pixelsY)
-  const x = i % pixelsX;
-  const pixelObj = false;
-
-  pixelMatrix[x][y] = pixelObj;
-
-  return null;
-});
-
-class Pixel {
-  constructor (color, x, y) {
-    this.x = x;
-    this.y = y;
-    this.color = color;
-  }
-
-  get collidingPixels () {
-    const y = this.y;
-    const x = this.x;
-
-    const pixelUp = !!y && pixelMatrix[y - 1][x];
-    const pixelRight = pixelsX - 1 !== x && pixelMatrix[y][x + 1];
-    const pixelDown = pixelsY - 1 !== y && pixelMatrix[y + 1][x];
-    const pixelLeft = !!x && pixelMatrix[y][x - 1];
-
-    return [pixelUp, pixelRight, pixelDown, pixelLeft];
-  }
-
-  get isColliding () {
-    return this.collidingPixels.reduce((isColliding, collision) => (rem && !!collision), false);
-  }
-
-  destroy () {
-  }
-};
-
-
-
-const connectionList = (new Array((pixelsX - 1) * (pixelsY - 1)))
-.fill('').map((d, i) => {
-  return {
-    x: i % (pixelsX - 1),
-    y: Math.floor(i / (pixelsY - 1)),
-    color: null,
-  }
-});
-
+// draws grid line background
 function drawGrid (lineSize = 1, color = 'rgba(0,0,0,.07)') {
   ctx.lineWidth = lineSize;
   ctx.strokeStyle = color;
@@ -129,6 +71,100 @@ function drawGrid (lineSize = 1, color = 'rgba(0,0,0,.07)') {
 
 drawGrid();
 
+
+
+// global edit mode draw
+//-------------------------------
+let editModes = ['draw', 'drawHueShift', 'eraze'];
+let editMode = 'draw';
+
+document.querySelector('body').addEventListener('pointerdown', (e) => {
+  if (e.target.matches('[data-mode]')) {
+    editMode = e.target.dataset.mode;
+  }
+});
+
+// global color mixin mode
+const colorModes = ['lab', 'hsl', 'hsv', 'hsi', 'lch', 'rgb', 'lrgb'];
+let currentColorMode = colorModes[0];
+
+// pixel grid
+// create an array of array for each x and y coordinate
+// a matrix!
+const pixelMatrix = new Array(pixelsY).fill('').map(y => new Array(pixelsX).fill(false));
+
+// pixel class
+class Pixel {
+  constructor (color, x, y, isDry = false) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.isPaintDry = isDry;
+  }
+
+  get collidingPixels () {
+    const y = this.y;
+    const x = this.x;
+
+    const pixelUp = !!y && pixelMatrix[y - 1][x];
+    const pixelRight = pixelsX - 1 !== x && pixelMatrix[y][x + 1];
+    const pixelDown = pixelsY - 1 !== y && pixelMatrix[y + 1][x];
+    const pixelLeft = !!x && pixelMatrix[y][x - 1];
+
+    let colliding = [pixelUp, pixelRight, pixelDown, pixelLeft];
+
+    colliding = colliding.map(collidingPixel => (
+      collidingPixel.isPaintDry ? collidingPixel : false
+    ));
+
+    return colliding;
+  }
+
+  get isColliding () {
+    return this.collidingPixels.reduce((isColliding, collision) => (rem && !!collision), false);
+  }
+
+  dryPaint () {
+    this.isPaintDry = true;
+  }
+
+  eraze (size = pixelsize) {
+    ctx.clearRect(this.x * size, this.y * size, size, size);
+  }
+
+  draw (size = pixelsize, opacity = 1) {
+    ctx.fillStyle = this.color.alpha(opacity).hex();
+    ctx.fillRect(this.x * size, this.y * size, size, size);
+  }
+
+  drawIntersections () {
+    this.collidingPixels.forEach(intersectinPixel => {
+      if (intersectinPixel) {
+          this._drawIntersection(
+            intersectinPixel
+          );
+        }
+    });
+  }
+  _drawIntersection (
+    otherPixel,
+    size = pixelsize,
+    opacity = 1,
+    colormode = currentColorMode
+  ) {
+    const intersectionColor = chroma.mix(this.color, otherPixel.color, opacity * .5, colormode);
+
+    intersectionCtx.fillStyle = intersectionColor.hex();
+    intersectionCtx.save();
+    intersectionStyles[interesectionStlye](this, otherPixel, size, 1);
+    intersectionCtx.restore();
+  }
+
+  destroy () {
+
+  }
+};
+
 let currentColor = chroma(
   `hsl(${Math.round(Math.random() * 360)},${Math.round(Math.random() * 100)}%,${Math.round(Math.random() * 100)}%)`
 );
@@ -147,8 +183,11 @@ const intersectionStyles = {
     intersectionCtx.scale(scale, scale);
 
     intersectionCtx.scale(scaleFactor, scaleFactor);
-    intersectionCtx.translate(pixelSize - scaleFactor * pixelSize, pixelSize - scaleFactor * pixelSize)
 
+    intersectionCtx.translate(
+      pixelSize - scaleFactor * pixelSize,
+      pixelSize - scaleFactor * pixelSize
+    );
 
     intersectionCtx.fillRect(
       0,
@@ -162,26 +201,6 @@ const intersectionStyles = {
   'emboss': (pixel1, pixel2, pixelSize) => {},
 };
 let interesectionStlye = Object.keys(intersectionStyles)[0];
-
-function drawPixel (pixel, size = pixelsize, opacity = 1, clearRect = true) {
-  if ( clearRect || editMode !== 'eraze' ) {
-    ctx.clearRect(pixel.x * size, pixel.y * size, size, size);
-  }
-  if ( editMode !== 'eraze' ) {
-    ctx.fillStyle = currentColor.alpha(opacity).hex();
-    ctx.fillRect(pixel.x * size, pixel.y * size, size, size);
-  }
-}
-
-function drawIntersection(pixel1, pixel2, size = pixelsize, opacity = 1) {
-  const intersectionColor = chroma.mix(pixel1.color, pixel2.color, opacity * .5, currentColorMode);
-  //intersectionColor.alpha(opacity);
-
-  intersectionCtx.fillStyle = intersectionColor.hex();
-  intersectionCtx.save();
-  intersectionStyles[interesectionStlye](pixel1, pixel2, size, 1);
-  intersectionCtx.restore();
-}
 
 let pointerdown = false;
 
@@ -208,62 +227,50 @@ function translateFromPXtoMatrix (x, y) {
   ];
 }
 
+
 let prevX = null, prevY = null;
+let wasLastPixelAnOtherColor = false;
+let lastColor = false;
 
 function draw (mouseEvent) {
   const [x, y] = translateFromPXtoMatrix(mouseEvent.offsetX, mouseEvent.offsetY);
 
-  let replacePixel = false;
-
-  if (pixelMatrix[y][x]) {
-    replacePixel = true;
-  }
-
   if (prevX !== x || prevY !== y) {
     prevX = x;
     prevY = y;
+
     //currentColor = chroma(currentColor).set('hsl.h', '+20');
+  } else {
+    return; // dont do anything if you did not move
+  }
+
+  let replacePixel = false;
+
+  let pixel;
+
+  wasLastPixelAnOtherColor = false;
+
+  if (pixelMatrix[y][x]) {
+    replacePixel = true;
+    pixel = pixelMatrix[y][x];
+    pixel.isPaintDry = true;
+    lastColor = pixel.color;
+    wasLastPixelAnOtherColor = pixel.color.hex() !== currentColor.hex();
+
+    pixel.color = currentColor;
+  } else {
+    pixel = addPixelList(x, y, currentColor);
   }
 
 
-  const pixel = addPixelList(x, y, currentColor);
   //updateCollisions(x, y);
 
 
 
   const animation = []
-  pixel.collidingPixels.forEach((intersectinPixel) => {
-    if (intersectinPixel) {
-      //drawIntersection(pixel, intersectinPixel, pixelsize);
-
-      let intersectTransform = {
-        scale: 1,
-        opacity: 0,
-      };
-
-      animation.push(anime({
-        targets: intersectTransform,
-        scale: 1,
-        delay: 300,
-        opacity: 1,
-        autoplay: false,
-        duration: 300,
-        easing: 'linear',
-        update: function () {
-          drawIntersection(
-            pixel,
-            intersectinPixel,
-            pixelsize,
-            intersectTransform.opacity
-          );
-        }
-      }));
-
-    };
-  })
+  pixel.drawIntersections();
 
   let transform = {
-    scale: 1,
     opacity: 0,
   };
 
@@ -276,27 +283,13 @@ function draw (mouseEvent) {
       autoplay: false,
       easing: 'linear',
       update: function () {
-        drawPixel(
-          pixel,
-          pixelsize,
-          transform.opacity,
-          !replacePixel
-        )
-        /* // animate with scale
-        drawPixel(
-          ((pixelsize * .5) - (pixelsize * 0.5 * transform.scale)) + x * pixelsize + transform.scale,
-          ((pixelsize * .5) - (pixelsize * 0.5 * transform.scale)) + y * pixelsize + transform.scale,
-          transform.scale * pixelsize,
-          transform.opacity
-        )
-        */
+        if (replacePixel) {
+          pixel.eraze();
+        }
+        pixel.draw(pixelsize, transform.opacity);
       }
     })
   );
-
-  /*drawPixel(
-    x * pixelsize, y * pixelsize
-  );*/
 
   animation.forEach(anim => anim.play());
 };
@@ -307,10 +300,35 @@ $can.addEventListener('pointerdown', (e) => {
   draw(e);
 });
 
+function dryAllThePixels (gradientTo = false) {
+  let inc = 1;
+  return pixelMatrix.forEach(
+      (y, i) => (
+        y.forEach((x, j) => {
+          if (x && gradientTo && !x.isPaintDry) {
+            x.color = chroma.mix(x.color, gradientTo, inc -= .1, currentColorMode);
+            console.log(x.color.hex())
+            x.draw();
+          }
+          x && x.dryPaint()
+        }
+      )
+    )
+  );
+};
+
+function createPixelGradient () {
+
+}
 
 $doc.addEventListener('pointerup', (e) => {
   pointerdown = false;
-  procesLine();
+  prevX = null;
+  prevY = null;
+
+
+  dryAllThePixels(wasLastPixelAnOtherColor && lastColor);
+
 });
 
 $can.addEventListener('pointermove', e => {
