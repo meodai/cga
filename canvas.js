@@ -24,6 +24,8 @@ const intersectionCtx = $interssectionCan.getContext('2d');
 $can.width = w;
 $can.height = h;
 
+$interssectionCan.width = w;
+$interssectionCan.height = h;
 
 if (window.devicePixelRatio > 1) {
   const canWidth = $can.width;
