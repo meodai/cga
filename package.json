@@ -5,7 +5,7 @@
   "main": "index.pug",
   "scripts": {
     "start": "parcel index.pug",
-    "build": "parcel build index.pug",
+    "build": "parcel build *.pug",
     "test": "npm run build"
   },
   "repository": {
@@ -29,6 +29,7 @@
     "sass": "^1.29.0"
   },
   "dependencies": {
+    "animejs": "^3.2.1",
     "chroma-js": "^2.1.0"
   },
   "staticFiles": {

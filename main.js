@@ -1,5 +1,7 @@
 import chroma from 'chroma-js';
 
+console.log('find the sources here: https://github.com/meodai/cga');
+
 const savedState = readFromUri();
 
 const $favicon = document.querySelector('[rel="icon"]');

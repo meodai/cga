@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>CGA — Color Palette Generation Android</title>
+  <meta name="title" content="CGA — Color Palette Generation Android">
+  <meta name="description" content="Explorative color palette editor.">
+  <!--  Open Graph / Facebook-->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cga.elastiq.ch/">
+  <meta property="og:title" content="CGA — Color Palette Generation Android">
+  <meta property="og:description" content="Explorative color palette editor.">
+  <meta property="og:image" content="https://cga.elastiq.ch/cga.png">
+  <!--  Twitter-->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://cga.elastiq.ch/">
+  <meta property="twitter:title" content="CGA — Color Palette Generation Android">
+  <meta property="twitter:description" content="Explorative color palette editor.">
+  <meta property="twitter:image" content="https://cga.elastiq.ch/cga.png">
+  <link rel="icon"
+    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+  <style>
+    .canvas {
+      position: relative;
+      display: block;
+      width: 80vmin;
+      height: 80vmin;
+      margin: 10vmin auto;
+      box-shadow: 0 0 0 4px #212121;
+    }
+
+    .canvas canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .canvas canvas:first-child {
+      pointer-events: all;
+    }
+
+    /*
+
+    body {
+      --r1: 255;
+      --g1: 0;
+      --b1: 0;
+
+      --r2: 123;
+      --g2: 0;
+      --b2: 255;
+
+      background-color: rgb(
+        calc((var(--r1) + var(--r2)) / 2),
+        calc((var(--g1) + var(--g2)) / 2),
+        calc((var(--b1) + var(--b2)) / 2)
+      );
+    }
+
+    */
+  </style>
+</head>
+
+<body>
+  <menu>
+    <li><button data-mode='draw'>Draw</button></li>
+    <li><button data-mode='eraze'>Eraze</button></li>
+  </menu>
+  <div class="canvas" data-convas-container>
+
+  </div>
+  <script src="canvas.js"></script>
+</body>
+
+</html>
